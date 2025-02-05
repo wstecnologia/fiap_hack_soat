@@ -6,3 +6,4 @@ dist/
 *.exe
 *.tsbuildinfo
 package-lock.json
+.env
