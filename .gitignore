@@ -6,3 +6,8 @@ dist/
 *.exe
 *.tsbuildinfo
 package-lock.json
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+.env
