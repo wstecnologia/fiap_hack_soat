@@ -4,11 +4,14 @@ dotenv.config();
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../swagger.json";
+import errorHandler from './presentation/middlewares/Auth/errorHandler';
 import { router } from './presentation/routes/ImportRouters';
 
 const app = express()
 
+
 app.use(router);
+app.use(errorHandler)
 app.use(
   "/docs",
   swaggerUi.serve,

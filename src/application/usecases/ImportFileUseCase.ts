@@ -1,68 +1,51 @@
-import ffmpeg from 'fluent-ffmpeg';
+import { DomainException } from '@/domain/exceptions/DomainException';
+import { IFileSystemService } from '@/domain/file-handling/IFileSystemService';
+import { Status } from '@/domain/shared/Status';
 import fs from 'fs';
-import path from 'path';
+import { FileCompressionService } from '../../domain/file-handling/FileCompressionService';
+import { ImageProcessingService } from '../../domain/file-handling/ImageProcessingService';
+import { IMessageQueue } from '../../domain/queues/IMessageQueue';
 
-
-export class ImportFileUseCase {
-  private videoPath:string 
-  private outputFolder = path.join(__dirname, 'Images');
-  private destinationZipFilePath = path.join(__dirname, 'images.zip');
+export class ImportFileUseCase {  
+  private outputFolder:string 
+  private destinationZipFilePath:string 
   
-  constructor(){
-    if (!fs.existsSync(this.outputFolder)) {
-        fs.mkdirSync(this.outputFolder, { recursive: true });
-    }
-    
+  constructor(
+    private imageProcessingService:ImageProcessingService,
+    private compressionService:FileCompressionService,
+    private rabbitMQPublisher:IMessageQueue,
+    private fileSystemService: IFileSystemService
+  ){
+    this.outputFolder = this.fileSystemService.outputFolder()
+    this.destinationZipFilePath = this.fileSystemService.destinationZipFilePath()
   }
 
-  async execute(files:any):Promise<void>{
-    console.log(files)
-    this.videoPath = files.path 
-    if (!fs.existsSync(files.path)) {
-        throw new Error(`Arquivo de vídeo não encontrado: ${files.path}`);
-    }
+  async execute(data:Input):Promise<void>{    
+    console.log("Iniciando processamento...");
+  
+    try {  
+      await this.imageProcessingService.extractFrames(data.file.path, this.outputFolder, 20);
+      await this.compressionService.zipFolder(this.outputFolder, this.destinationZipFilePath);
 
-    const duration = await this.getVideoDuration(this.videoPath);
-    const interval = 20; // Intervalo de 20 segundos
-    const tasks: Promise<void>[] = [];
+      const arquivoBuffer = fs.readFileSync(this.destinationZipFilePath);
 
-    for (let currentTime = 0; currentTime < duration; currentTime += interval) {
-      console.log(`Processando frame: ${currentTime}s`);
-      const outputPath = path.join(this.outputFolder, `frame_at_${currentTime}.jpg`);
-
-      tasks.push(
-        new Promise<void>((resolve, reject) => {
-          ffmpeg(this.videoPath )
-            .screenshots({
-              timestamps: [currentTime],
-              filename: path.basename(outputPath),
-              folder: this.outputFolder,
-              size: '1920x1080',
-            })
-            .on('end', resolve)
-            .on('error', (err) => {
-              console.error(`Erro ao processar frame em ${currentTime}s:`, err);
-              reject(err);
-            });
-        })
-      );
-    }
-
-    // Aguarda todas as promessas finalizarem
-    await Promise.all(tasks);
-    
-  }
-
-  private getVideoDuration = async (filePath: string): Promise<number> => {
-      return new Promise((resolve, reject) => {
-          ffmpeg.ffprobe(filePath, (err, metadata) => {
-              if (err) {
-                  reject(err);
-              } else {
-                  const duration = metadata.format.duration;
-                  resolve(duration || 0);
-              }
-          });
+      await this.rabbitMQPublisher.publish({
+        file: arquivoBuffer,
+        user_id: data.user_id,
+        status: Status.PROCESSAMENTO_ANDAMENTO,
       });
-  };
+
+      console.log("Processo finalizado.");
+  } catch (error) {
+      console.error("Erro durante o processo:", error);
+      throw new DomainException(`Erro durante o processo`);  
+  }
+    
+  }
+
+}
+
+type Input = {
+  file:any
+  user_id:string
 }
