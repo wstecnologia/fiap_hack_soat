@@ -7,8 +7,8 @@
   "paths": {
     "/upload": {
       "post": {
-        "summary": "Upload de arquivo",
-        "tags": ["Upload"],
+        "summary": "Import fragments of midia",
+        "tags": ["Files"],
         "requestBody": {
           "required": true,
           "content": {
@@ -38,6 +38,52 @@
           }
         }
       }
+    },
+    "/list":{
+      "get": {
+    "tags": ["Files"],
+    "summary": "List status by imports",
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "description": "Page number (starts from 1)",
+        "schema": {
+          "type": "integer",
+          "default": 1,
+          "minimum": 1
+        }
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "Number of orders per page",
+        "schema": {
+          "type": "integer",
+          "default": 10,
+          "minimum": 1
+        }
+      }
+      
+    ],
+    "responses": {
+      "200": {
+        "description": "List of orders retrieved successfully"
+      },
+      "400": {
+        "description": "Invalid request parameters"
+      },
+      "401": {
+        "description": "Unauthorized access"
+      },
+      "404": {
+        "description": "No orders found for the given criteria"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
     }
   }
 }

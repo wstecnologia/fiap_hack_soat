@@ -1,5 +1,7 @@
+import { File } from '@/domain/entities/File';
 import { DomainException } from '@/domain/exceptions/DomainException';
 import { IFileSystemService } from '@/domain/file-handling/IFileSystemService';
+import { IFileRepositorie } from '@/domain/repositories/IFileRepositorie';
 import { Status } from '@/domain/shared/Status';
 import fs from 'fs';
 import { FileCompressionService } from '../../domain/file-handling/FileCompressionService';
@@ -14,7 +16,8 @@ export class ImportFileUseCase {
     private imageProcessingService:ImageProcessingService,
     private compressionService:FileCompressionService,
     private rabbitMQPublisher:IMessageQueue,
-    private fileSystemService: IFileSystemService
+    private fileSystemService: IFileSystemService,
+    private fileRepositorie: IFileRepositorie
   ){
     this.outputFolder = this.fileSystemService.outputFolder()
     this.destinationZipFilePath = this.fileSystemService.destinationZipFilePath()
@@ -29,12 +32,24 @@ export class ImportFileUseCase {
 
       const arquivoBuffer = fs.readFileSync(this.destinationZipFilePath);
 
+      const file: File = {
+        url:"",
+        user_id: data.user_id,
+        duration:"",
+        originalname:data.file.originalname,
+        size:data.file.size,
+        status: Status.PROCESSAMENTO_ANDAMENTO
+      } 
+
+      const dataRepositorieId = await this.fileRepositorie.insert(file)
+
       await this.rabbitMQPublisher.publish({
         file: arquivoBuffer,
         user_id: data.user_id,
         status: Status.PROCESSAMENTO_ANDAMENTO,
+        id_db:dataRepositorieId
       });
-
+     
       console.log("Processo finalizado.");
   } catch (error) {
       console.error("Erro durante o processo:", error);

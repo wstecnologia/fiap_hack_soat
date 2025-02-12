@@ -1,6 +1,9 @@
 export interface File { 
-  name:string
+  id?:string
+  originalname:string
   duration:string
   size:number
-  user_ir:number
+  user_id:string
+  url:string
+  status:string
 }
