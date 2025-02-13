@@ -11,6 +11,35 @@ export class FilesMongoRepositorie implements IFileRepositorie {
     this._prisma = new  PrismaClient()
   }
 
+async update(file: File): Promise<void> {
+  try {
+    try {
+      console.log(file)
+      
+        await this._prisma.files.update({
+            data:{
+              status:file.status,        
+              link_file:file.url
+            },
+            where:{
+              id:file.id
+            }
+          })
+    } catch (error) {
+      throw new InfrastructureException("An error occurred updated file");
+    }finally {
+      await this._prisma.$disconnect();
+    }
+    
+    
+  } catch (error) {
+    console.error(error)
+    throw new InfrastructureException("An error occurred update file");
+  } finally {
+    await this._prisma.$disconnect();
+  }
+}
+
 async insert(file: File): Promise<string> {
     try {
     
@@ -45,26 +74,36 @@ async getFilesUses(filter:Input): Promise<PaginatedResponseDTO<FileResponseDTO>>
     return new PaginatedResponseDTO(filesDto, totalItems, filter.page, filter.limit)
     
   } catch (error) {
-  console.error(error)
-  throw new Error("An error occurred list all orders");
+    console.error(error)
+    throw new InfrastructureException("An error occurred list all files");
   } finally {
-  await this._prisma.$disconnect();
+    await this._prisma.$disconnect();
   }
 }
 
-async updateOrderStatus(file:File): Promise<void> {
-    
+
+async getFile(id:string): Promise<File> {    
   try {
-      await this._prisma.files.update({
-          data:{
-            status:file.status,        
+    const file =  await this._prisma.files.findMany({
+      where:{
+        id
+      }
+    })
+
+    const returnFile:File = {
+      id: file[0].id,
+      url:file[0].link_file,
+      user_id:file[0].user_id,
+      status: file[0].status,
+      originalname:"", 
+      duration:"",
+      size:0 
+    }
+
+    return returnFile
     
-          },
-          where:{
-            id:file.id
-          }
-        })
   } catch (error) {
+    console.error(error)
     throw new InfrastructureException("An error occurred updated file");
   }finally {
     await this._prisma.$disconnect();

@@ -1,5 +1,7 @@
+import { UpdateStatusFileUseCase } from "@/application/usecases/UpdateStatusFileUseCase";
 import { IMessageQueue } from "@/domain/queues/IMessageQueue";
 import { RabbitMQConnection } from "../config/rabbitMQConnection";
+import { FilesMongoRepositorie } from "../repository/FilesMongoRepositorie";
 
 export class RabbitMQFactory implements IMessageQueue {
 
@@ -33,7 +35,7 @@ export class RabbitMQFactory implements IMessageQueue {
     }
   }
 
-  /*async on(): Promise<void> {
+  async on(): Promise<void> {
     try {      
       await this.consume(); 
     } catch (error) {
@@ -64,8 +66,13 @@ export class RabbitMQFactory implements IMessageQueue {
               const parsedMessage = JSON.parse(messageContent);   
             
               if(parsedMessage){
-                const importController = new ImportFilesControlers ()
-                await importController.import(req, res)
+                const updateStatusUseCase = new UpdateStatusFileUseCase(new FilesMongoRepositorie())
+                const input = {
+                  id:parsedMessage.id,
+                  status:parsedMessage.status,
+                  url:parsedMessage.url
+                }
+                await updateStatusUseCase.execute(input)
               }
               
 
@@ -83,7 +90,7 @@ export class RabbitMQFactory implements IMessageQueue {
       console.error('Error consuming messages from RabbitMQ:', error);
       throw error;
     }    
-  }*/
+  }
 
 
   private async processMessage(message: any): Promise<void> {    

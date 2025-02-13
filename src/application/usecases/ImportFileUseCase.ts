@@ -35,7 +35,7 @@ export class ImportFileUseCase {
       const file: File = {
         url:"",
         user_id: data.user_id,
-        duration:"",
+        duration: "",
         originalname:data.file.originalname,
         size:data.file.size,
         status: Status.PROCESSAMENTO_ANDAMENTO

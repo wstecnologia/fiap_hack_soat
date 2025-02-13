@@ -35,5 +35,18 @@ router.get('/list', upload.single('file'), async(req:Request, res:Response)=>{
   
 });
 
+router.put('/update-status', upload.single('file'), async(req:Request, res:Response)=>{
+  try {
+  
+    await controller.updateStatus(req)
+    
+    res.status(200).json({})  
+  } catch (error) {
+    console.error(error)
+    res.status(400).json({message:error.message|| "An error occurred while logging in."})
+  }
+  
+});
+
 
 

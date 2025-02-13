@@ -1,5 +1,6 @@
 import { ImportFileUseCase } from "@/application/usecases/ImportFileUseCase";
 import { ListStatusFilesUsersUseCase } from "@/application/usecases/ListStatusFilesUsersUseCase";
+import { UpdateStatusFileUseCase } from "@/application/usecases/UpdateStatusFileUseCase";
 import { FileSystemService } from "@/infrastructure/config/FileSystemService";
 import { RabbitMQFactory } from "@/infrastructure/queue/RabbitMqFactory";
 import { FilesMongoRepositorie } from "@/infrastructure/repository/FilesMongoRepositorie";
@@ -9,6 +10,7 @@ import { FfmpegImageProcessingService } from "@/infrastructure/services/FfmpegIm
 export class FilesControllers {
   private importFilesUseCase: ImportFileUseCase
   private listStatusFilesUsersUseCase: ListStatusFilesUsersUseCase
+  private updateStatusUseCase: UpdateStatusFileUseCase
   constructor(){
     this.importFilesUseCase = new ImportFileUseCase(
       new FfmpegImageProcessingService(),
@@ -18,6 +20,7 @@ export class FilesControllers {
       new FilesMongoRepositorie()
     )
     this.listStatusFilesUsersUseCase = new ListStatusFilesUsersUseCase(new FilesMongoRepositorie())
+    this.updateStatusUseCase = new UpdateStatusFileUseCase(new FilesMongoRepositorie())
   }
 
   async import(req):Promise<void>{    
@@ -39,5 +42,16 @@ export class FilesControllers {
     }
     return this.listStatusFilesUsersUseCase.execute(filter)
 
+  }
+
+  async updateStatus(req){
+    const {id, status, url} = req.query
+
+    const data = {
+      id,
+      status,
+      url
+    }
+    this.updateStatusUseCase.execute(data)   
   }
 }
