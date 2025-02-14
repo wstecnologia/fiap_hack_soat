@@ -19,3 +19,8 @@ Para executar este projeto, você precisará ter:
 
 ```csharp
 var videoPath = @"Caminho\Para\Seu\Vídeo.mp4";
+```
+
+### Scripts utéis 
+Atualizar conteiner
+  docker-compose down && docker-compose pull && docker-compose up -d
