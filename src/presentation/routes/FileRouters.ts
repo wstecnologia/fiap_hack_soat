@@ -9,10 +9,10 @@ export const router = Router();
 const upload = MulterConfig.getMulterInstance()
 
 
-router.post('/import', authMiddleware, upload.single('file'), async(req:Request, res:Response)=>{
+router.post('/import', authMiddleware, upload.single('file'), (req:Request, res:Response)=>{
   try {
   
-    const retorno = await controller.import(req)
+    const retorno = controller.import(req)
     
     res.status(200).json(retorno)  
   } catch (error) {

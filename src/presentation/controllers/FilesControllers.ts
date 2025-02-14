@@ -1,4 +1,4 @@
-import { ImportFileUseCase } from "@/application/usecases/ImportFileUseCase";
+import { CreateSnapshotsUseCase } from "@/application/usecases/CreateSnapshotsUseCase";
 import { ListStatusFilesUsersUseCase } from "@/application/usecases/ListStatusFilesUsersUseCase";
 import { UpdateStatusFileUseCase } from "@/application/usecases/UpdateStatusFileUseCase";
 import { FileSystemService } from "@/infrastructure/config/FileSystemService";
@@ -8,11 +8,11 @@ import { ArchiverCompressionService } from "@/infrastructure/services/ArchiverCo
 import { FfmpegImageProcessingService } from "@/infrastructure/services/FfmpegImageProcessingService";
 
 export class FilesControllers {
-  private importFilesUseCase: ImportFileUseCase
+  private createSnapshotsUseCase: CreateSnapshotsUseCase
   private listStatusFilesUsersUseCase: ListStatusFilesUsersUseCase
   private updateStatusUseCase: UpdateStatusFileUseCase
   constructor(){
-    this.importFilesUseCase = new ImportFileUseCase(
+    this.createSnapshotsUseCase = new CreateSnapshotsUseCase(
       new FfmpegImageProcessingService(),
       new ArchiverCompressionService(),
       new RabbitMQFactory('import_files','fiap_file_progress','fiap_file_progress'),
@@ -23,7 +23,7 @@ export class FilesControllers {
     this.updateStatusUseCase = new UpdateStatusFileUseCase(new FilesMongoRepositorie())
   }
 
-  async import(req):Promise<void>{    
+   import(req):Promise<void>{    
     const user_id = req.auth.sub
 
     const input = {
@@ -31,7 +31,7 @@ export class FilesControllers {
       file:req.file
     }
     
-    return await this.importFilesUseCase.execute(input)
+    return  this.createSnapshotsUseCase.execute(input)
   }
 
   async getListStatusFilesUsers(req){

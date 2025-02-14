@@ -47,7 +47,7 @@ async insert(file: File): Promise<string> {
       const fileCreated =  await this._prisma.files.create({
           data:{        
             status: file.status,
-            user_id: file.user_id,
+            user_id: file.userId,
             link_file: file.url,
 
           }
@@ -90,7 +90,7 @@ async getFile(id:string): Promise<File> {
       }
     })
 
-    const returnFile:File = {
+    const returnFile = File.create({
       id: file[0].id,
       url:file[0].link_file,
       user_id:file[0].user_id,
@@ -98,7 +98,7 @@ async getFile(id:string): Promise<File> {
       originalname:"", 
       duration:"",
       size:0 
-    }
+    })
 
     return returnFile
     

@@ -11,3 +11,6 @@ package-lock.json
 terraform.tfstate
 terraform.tfstate.backup
 .env
+coverage/
+*.zip
+Images

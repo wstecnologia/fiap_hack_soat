@@ -8,9 +8,11 @@ export class ArchiverCompressionService implements FileCompressionService {
       const output = fs.createWriteStream(zipFilePath);
       const archive = archiver("zip", { zlib: { level: 9 } });
 
-      output.on("close", resolve);
-      archive.on("error", reject);
+      output.on("close", () => resolve());
+      output.on("end", () => console.log("Arquivo ZIP finalizado."));
+      output.on("error", reject);
 
+      archive.on("error", reject);
       archive.pipe(output);
       archive.directory(sourceFolder, false);
       archive.finalize();
