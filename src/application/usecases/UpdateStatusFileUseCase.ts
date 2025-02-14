@@ -8,15 +8,15 @@ export class UpdateStatusFileUseCase {
 
     const file = await this.fileRepositorie.getFile(data.id)
 
-    const inputFile:File = {
+    const inputFile = File.create({
       status:data.status,
       url:data.url,
       id:data.id,
-      originalname:file.originalname, 
+      originalname:file.name, 
       duration:file.duration, 
       size:file.size, 
-      user_id:file.user_id
-    }
+      user_id:file.userId
+    })
 
     await this.fileRepositorie.update(inputFile) 
   }

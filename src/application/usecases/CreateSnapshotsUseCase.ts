@@ -8,7 +8,7 @@ import { FileCompressionService } from '../../domain/file-handling/FileCompressi
 import { ImageProcessingService } from '../../domain/file-handling/ImageProcessingService';
 import { IMessageQueue } from '../../domain/queues/IMessageQueue';
 
-export class ImportFileUseCase {  
+export class CreateSnapshotsUseCase {  
   private outputFolder:string 
   private destinationZipFilePath:string 
   
@@ -23,40 +23,38 @@ export class ImportFileUseCase {
     this.destinationZipFilePath = this.fileSystemService.destinationZipFilePath()
   }
 
-  async execute(data:Input):Promise<void>{    
+  execute(data:Input):Promise<void>{    
     console.log("Iniciando processamento...");
-  
-    try {  
-      await this.imageProcessingService.extractFrames(data.file.path, this.outputFolder, 20);
-      await this.compressionService.zipFolder(this.outputFolder, this.destinationZipFilePath);
-
-      const arquivoBuffer = fs.readFileSync(this.destinationZipFilePath);
-
-      const file: File = {
+    return this.imageProcessingService.extractFrames(data.file.path, this.outputFolder, 20)
+    .then(() => this.compressionService.zipFolder(this.outputFolder, this.destinationZipFilePath))
+    .then(() => fs.promises.readFile(this.destinationZipFilePath))
+    .then((arquivoBuffer) => {
+      const file = File.create({
         url:"",
         user_id: data.user_id,
         duration: "",
         originalname:data.file.originalname,
         size:data.file.size,
         status: Status.PROCESSAMENTO_ANDAMENTO
-      } 
+      })
 
-      const dataRepositorieId = await this.fileRepositorie.insert(file)
-
-      await this.rabbitMQPublisher.publish({
+      return this.fileRepositorie.insert(file)
+        .then((dataRepositorieId) => ({ arquivoBuffer, dataRepositorieId }));
+    })
+    .then(({ arquivoBuffer, dataRepositorieId }) => 
+      this.rabbitMQPublisher.publish({
         file: arquivoBuffer,
         user_id: data.user_id,
         status: Status.PROCESSAMENTO_ANDAMENTO,
-        id_db:dataRepositorieId
-      });
-     
-      console.log("Processo finalizado.");
-  } catch (error) {
+        id_db: dataRepositorieId
+      })
+    )
+    .then(() => console.log("Processo finalizado."))
+    .catch((error) => {
       console.error("Erro durante o processo:", error);
-      throw new DomainException(`Erro durante o processo`);  
-  }
-    
-  }
+      throw new DomainException(`Erro durante o processo: ${error instanceof Error ? error.message : error}`);
+    });
+}  
 
 }
 
