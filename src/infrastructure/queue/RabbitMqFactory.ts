@@ -1,5 +1,5 @@
-import { UpdateStatusFileUseCase } from "@/application/usecases/UpdateStatusFileUseCase";
 import { IMessageQueue } from "@/domain/queues/IMessageQueue";
+import { UpdateStatusFileUseCase } from "../../application/usecases/UpdateStatusFileUseCase";
 import { RabbitMQConnection } from "../config/rabbitMQConnection";
 import { FilesMongoRepositorie } from "../repository/FilesMongoRepositorie";
 
@@ -70,7 +70,7 @@ export class RabbitMQFactory implements IMessageQueue {
                 const input = {
                   id:parsedMessage.id,
                   status:parsedMessage.status,
-                  url:parsedMessage.url
+                  url:parsedMessage.link_file
                 }
                 await updateStatusUseCase.execute(input)
               }

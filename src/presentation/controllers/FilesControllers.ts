@@ -28,7 +28,10 @@ export class FilesControllers {
 
     const input = {
       user_id,
-      file:req.file
+      originalname:req.file.originalname,
+      mimetype:req.file.mimetype,
+      size:Number(req.file.size),
+      buffer:req.file.buffer
     }
     
     return  this.createSnapshotsUseCase.execute(input)
