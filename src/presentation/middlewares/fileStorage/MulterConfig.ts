@@ -23,4 +23,10 @@ export class MulterConfig {
 
     return multer({ storage });
   }
+
+  static multerMemoryStorage(){
+    const storage = multer.memoryStorage();
+
+    return multer({ storage });
+  }
 }

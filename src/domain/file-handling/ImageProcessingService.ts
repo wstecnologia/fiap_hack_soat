@@ -1,3 +1,3 @@
 export interface ImageProcessingService {
-  extractFrames(videoPath: string, outputFolder: string, interval: number): Promise<void>;
+  extractFrames(fileBuffer: Buffer, outputFolder: string, interval: number): Promise<void>;
 }

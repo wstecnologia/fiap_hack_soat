@@ -6,12 +6,15 @@ import { MulterConfig } from '../middlewares/fileStorage/MulterConfig';
 const controller = new FilesControllers()
 
 export const router = Router();
-const upload = MulterConfig.getMulterInstance()
+const upload = MulterConfig.multerMemoryStorage()
 
 
 router.post('/import', authMiddleware, upload.single('file'), (req:Request, res:Response)=>{
   try {
   
+    if (!req.file) {
+      return res.status(400).json({ error: 'File not send' });
+    }
     const retorno = controller.import(req)
     
     res.status(200).json(retorno)  

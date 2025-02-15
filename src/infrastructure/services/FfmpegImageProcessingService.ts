@@ -5,19 +5,18 @@ import path from "path";
 
 export class FfmpegImageProcessingService implements ImageProcessingService {
   
-  async extractFrames(videoPath: string, outputFolder: string, interval: number): Promise<void> {
-    if (!fs.existsSync(videoPath)) {
-      throw new Error(`Arquivo de vídeo não encontrado: ${videoPath}`);
-    }
+  async extractFrames(fileBuffer: Buffer, outputFolder: string, interval: number): Promise<void> {
+    const tempVideoPath = path.join(outputFolder, `temp_video_${Date.now()}.mp4`);
+    await fs.promises.writeFile(tempVideoPath, fileBuffer);
 
-    const duration = await this.getVideoDuration(videoPath);
+    const duration = await this.getVideoDuration(tempVideoPath);
     const tasks: Promise<void>[] = [];
 
     for (let currentTime = 0; currentTime < duration; currentTime += interval) {
       const outputPath = path.join(outputFolder, `frame_at_${currentTime}.jpg`);
       tasks.push(
         new Promise<void>((resolve, reject) => {
-          ffmpeg(videoPath)
+          ffmpeg(tempVideoPath)
             .screenshots({
               timestamps: [currentTime],
               filename: path.basename(outputPath),
@@ -31,6 +30,7 @@ export class FfmpegImageProcessingService implements ImageProcessingService {
     }
 
     await Promise.all(tasks);
+    await fs.promises.unlink(tempVideoPath);
   }
 
   private getVideoDuration(filePath: string): Promise<number> {

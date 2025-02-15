@@ -25,16 +25,18 @@ export class CreateSnapshotsUseCase {
 
   execute(data:Input):Promise<void>{    
     console.log("Iniciando processamento...");
-    return this.imageProcessingService.extractFrames(data.file.path, this.outputFolder, 20)
+
+    return this.imageProcessingService.extractFrames(data.buffer, this.outputFolder, 20)
     .then(() => this.compressionService.zipFolder(this.outputFolder, this.destinationZipFilePath))
     .then(() => fs.promises.readFile(this.destinationZipFilePath))
     .then((arquivoBuffer) => {
+      //ImportS3.import(arquivoBuffer, "testeS3Fiap.zip")
       const file = File.create({
         url:"",
         user_id: data.user_id,
         duration: "",
-        originalname:data.file.originalname,
-        size:data.file.size,
+        originalname:data.originalname,
+        size:data.size,
         status: Status.PROCESSAMENTO_ANDAMENTO
       })
 
@@ -42,6 +44,8 @@ export class CreateSnapshotsUseCase {
         .then((dataRepositorieId) => ({ arquivoBuffer, dataRepositorieId }));
     })
     .then(({ arquivoBuffer, dataRepositorieId }) => 
+      
+
       this.rabbitMQPublisher.publish({
         file: arquivoBuffer,
         user_id: data.user_id,
@@ -58,7 +62,10 @@ export class CreateSnapshotsUseCase {
 
 }
 
-type Input = {
-  file:any
-  user_id:string
+type Input = {  
+  user_id:string  
+  originalname:string
+  mimetype:string
+  size:number
+  buffer: Buffer
 }
