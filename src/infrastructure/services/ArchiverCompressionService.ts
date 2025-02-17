@@ -1,6 +1,6 @@
-import { FileCompressionService } from "@/domain/file-handling/FileCompressionService";
 import archiver from "archiver";
 import fs from "fs";
+import { FileCompressionService } from "../../domain/file-handling/FileCompressionService";
 
 export class ArchiverCompressionService implements FileCompressionService {
   async zipFolder(sourceFolder: string, zipFilePath: string): Promise<void> {

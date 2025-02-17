@@ -1,11 +1,11 @@
-import { File } from '@/domain/entities/File';
-import { DomainException } from '@/domain/exceptions/DomainException';
-import { IFileSystemService } from '@/domain/file-handling/IFileSystemService';
-import { IFileRepositorie } from '@/domain/repositories/IFileRepositorie';
-import { Status } from '@/domain/shared/Status';
+import { File } from '../../domain/entities/File';
+import { DomainException } from '../../domain/exceptions/DomainException';
 import { FileCompressionService } from '../../domain/file-handling/FileCompressionService';
+import { IFileSystemService } from '../../domain/file-handling/IFileSystemService';
 import { ImageProcessingService } from '../../domain/file-handling/ImageProcessingService';
 import { IMessageQueue } from '../../domain/queues/IMessageQueue';
+import { IFileRepositorie } from '../../domain/repositories/IFileRepositorie';
+import { Status } from '../../domain/shared/Status';
 
 export class CreateSnapshotsUseCase {  
   private outputFolder:string 

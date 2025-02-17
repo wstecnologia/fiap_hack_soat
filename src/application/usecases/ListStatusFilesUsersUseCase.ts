@@ -1,5 +1,5 @@
-import { DomainException } from "@/domain/exceptions/DomainException";
-import { IFileRepositorie } from "@/domain/repositories/IFileRepositorie";
+import { DomainException } from "../../domain/exceptions/DomainException";
+import { IFileRepositorie } from "../../domain/repositories/IFileRepositorie";
 import { FileResponseDTO } from "../dto/FileResponseDTO";
 import { PaginatedResponseDTO } from "../dto/PaginatedResponseDTO";
 

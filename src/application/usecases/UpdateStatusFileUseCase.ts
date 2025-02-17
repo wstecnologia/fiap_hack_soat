@@ -1,5 +1,5 @@
-import { File } from "@/domain/entities/File";
-import { IFileRepositorie } from "@/domain/repositories/IFileRepositorie";
+import { File } from "../../domain/entities/File";
+import { IFileRepositorie } from "../../domain/repositories/IFileRepositorie";
 
 export class UpdateStatusFileUseCase {
   constructor(private fileRepositorie:IFileRepositorie){}

@@ -1,8 +1,8 @@
-import { FileResponseDTO } from "@/application/dto/FileResponseDTO";
-import { PaginatedResponseDTO } from "@/application/dto/PaginatedResponseDTO";
-import { File } from "@/domain/entities/File";
-import { IFileRepositorie } from "@/domain/repositories/IFileRepositorie";
 import { PrismaClient } from "@prisma/client";
+import { FileResponseDTO } from "../../application/dto/FileResponseDTO";
+import { PaginatedResponseDTO } from "../../application/dto/PaginatedResponseDTO";
+import { File } from "../../domain/entities/File";
+import { IFileRepositorie } from "../../domain/repositories/IFileRepositorie";
 import { InfrastructureException } from "../exceptions/InfrastructureException";
 
 export class FilesMongoRepositorie implements IFileRepositorie {
