@@ -15,6 +15,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
+    "moduleResolution": "node",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

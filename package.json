@@ -5,13 +5,11 @@
   "main": "index.ts",
   "scripts": {
     "test:coverage": "jest --coverage",
-    "start": "node dist/index.js",
+    "start": "node  dist/index.js",
     "build": "tsc -p tsconfig.json",
     "test": "jest",
-    "dev": "ts-node-dev -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/index.ts"
-  },
-  "_moduleAliases": {
-    "@": "dist"
+    "dev": "ts-node-dev -r tsconfig-paths/register --transpile-only --respawn --ignore-watch node_modules src/index.ts",
+    "clean": "rmdir /s /q dist && del tsconfig.tsbuildinfo"
   },
   "husky": {
     "hooks": {
@@ -24,6 +22,9 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "_moduleAliases": {
+    "@modules": "dist/"
   },
   "keywords": [],
   "author": "wstech",

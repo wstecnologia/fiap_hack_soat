@@ -1,11 +1,11 @@
-import { CreateSnapshotsUseCase } from "@/application/usecases/CreateSnapshotsUseCase";
-import { ListStatusFilesUsersUseCase } from "@/application/usecases/ListStatusFilesUsersUseCase";
-import { UpdateStatusFileUseCase } from "@/application/usecases/UpdateStatusFileUseCase";
-import { FileSystemService } from "@/infrastructure/config/FileSystemService";
-import { RabbitMQFactory } from "@/infrastructure/queue/RabbitMqFactory";
-import { FilesMongoRepositorie } from "@/infrastructure/repository/FilesMongoRepositorie";
-import { ArchiverCompressionService } from "@/infrastructure/services/ArchiverCompressionService";
-import { FfmpegImageProcessingService } from "@/infrastructure/services/FfmpegImageProcessingService";
+import { CreateSnapshotsUseCase } from "../../application/usecases/CreateSnapshotsUseCase";
+import { ListStatusFilesUsersUseCase } from "../../application/usecases/ListStatusFilesUsersUseCase";
+import { UpdateStatusFileUseCase } from "../../application/usecases/UpdateStatusFileUseCase";
+import { FileSystemService } from "../../infrastructure/config/FileSystemService";
+import { RabbitMQFactory } from "../../infrastructure/queue/RabbitMqFactory";
+import { FilesMongoRepositorie } from "../../infrastructure/repository/FilesMongoRepositorie";
+import { ArchiverCompressionService } from "../../infrastructure/services/ArchiverCompressionService";
+import { FfmpegImageProcessingService } from "../../infrastructure/services/FfmpegImageProcessingService";
 
 export class FilesControllers {
   private createSnapshotsUseCase: CreateSnapshotsUseCase
