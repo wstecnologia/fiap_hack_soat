@@ -9,11 +9,11 @@ export class FileSystemService implements IFileSystemService  {
     }
   }
 
-  readFile(filePath: string): Buffer {
+  readFile(filePath: string): Promise<Buffer> {
     if (!fs.existsSync(filePath)) {
       throw new Error(`Arquivo não encontrado: ${filePath}`);
     }
-    return fs.readFileSync(filePath);
+    return fs.promises.readFile(filePath);
   }
 
   joinPaths(...segments: string[]): string {
@@ -26,5 +26,14 @@ export class FileSystemService implements IFileSystemService  {
 
   destinationZipFilePath(){
     return path.join(__dirname, 'images.zip');
+  }
+
+  async deleteFile(filePath: string): Promise<void> {
+    try {
+      await fs.promises.unlink(filePath);
+      console.log(`Arquivo deletado: ${filePath}`);
+    } catch (error) {
+      console.error(`Erro ao deletar arquivo ${filePath}:`, error);
+    }
   }
 }
