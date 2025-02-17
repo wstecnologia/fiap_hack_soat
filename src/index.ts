@@ -1,5 +1,5 @@
-import 'module-alias/register';
 import dotenv from 'dotenv';
+//import 'module-alias/register';
 dotenv.config();
 
 import express from "express";
@@ -21,8 +21,13 @@ app.use(
   }),
 )
 
-const rabbitMq = new RabbitMQFactory('import_files','fiap_file_completed','fiap_file_completed')
-rabbitMq.on()
+const rabbitMq = new RabbitMQFactory()
+rabbitMq.on({
+  exchange:'import_files',
+  queue:'fiap_file_completed',
+  routingKey:'fiap_file_completed',
+  message:null
+})
 
 const port = process.env.PORT || 3000
 
