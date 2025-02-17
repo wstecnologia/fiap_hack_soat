@@ -43,20 +43,45 @@ export class CreateSnapshotsUseCase {
       return this.fileRepositorie.insert(file)
         .then((dataRepositorieId) => ({ arquivoBuffer, dataRepositorieId }));
     })
-    .then(({ arquivoBuffer, dataRepositorieId }) => 
-      
+    .then(({ arquivoBuffer, dataRepositorieId }) => {
+           
+      this.rabbitMQPublisher.publish({
+        exchange:'import_files',
+        queue:'fiap_file_progress',
+        routingKey:'fiap_file_progress',
+        message: {
+          file: arquivoBuffer,
+          user_id: data.user_id,
+          status: Status.PROCESSAMENTO_ANDAMENTO,
+          id_db: dataRepositorieId
+        }
+      })
 
       this.rabbitMQPublisher.publish({
-        file: arquivoBuffer,
-        user_id: data.user_id,
-        status: Status.PROCESSAMENTO_ANDAMENTO,
-        id_db: dataRepositorieId
+        exchange:'notification',
+        queue:'file_progress',
+        routingKey:'file_progress',
+        message: {
+          email: 'saviodesenv@gmail.com',
+          subject: "Processing file",
+          message: "File processing please wait",          
+        }
       })
-    )
+    })
     .then(() => console.log("Processo finalizado."))
     .catch((error) => {
       console.error("Erro durante o processo:", error);
-      throw new DomainException(`Erro durante o processo: ${error instanceof Error ? error.message : error}`);
+      this.rabbitMQPublisher.publish({
+        exchange:'notification',
+        queue:'file_progress',
+        routingKey:'file_progress',
+        message: {
+          email: 'saviodesenv@gmail.com',
+          subject: "Processing file",
+          message: "Process failed",          
+        }
+      })
+      throw new DomainException(`Error during process: ${error instanceof Error ? error.message : error}`);
     });
 }  
 

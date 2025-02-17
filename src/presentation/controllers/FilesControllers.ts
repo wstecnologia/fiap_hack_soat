@@ -15,7 +15,7 @@ export class FilesControllers {
     this.createSnapshotsUseCase = new CreateSnapshotsUseCase(
       new FfmpegImageProcessingService(),
       new ArchiverCompressionService(),
-      new RabbitMQFactory('import_files','fiap_file_progress','fiap_file_progress'),
+      new RabbitMQFactory(),
       new FileSystemService(),
       new FilesMongoRepositorie()
     )

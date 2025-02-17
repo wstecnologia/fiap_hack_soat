@@ -6,26 +6,26 @@ import { FilesMongoRepositorie } from "../repository/FilesMongoRepositorie";
 export class RabbitMQFactory implements IMessageQueue {
 
   constructor(
-    private readonly exchange:string,
-    private readonly queue:string,
-    private readonly routingKey:string
+    //private readonly exchange:string,
+    //private readonly queue:string,
+    //private readonly routingKey:string
   ){}
 
-  async publish(message: object): Promise<void> {
+  async publish(data: DataInput): Promise<void> {
     try {
       const connection = await RabbitMQConnection();
       const channel = await connection.createChannel();
  
-      await channel.assertExchange(this.exchange, 'direct', { durable: true });
-      await channel.assertQueue(this.queue, { durable: true });
-      await channel.bindQueue(this.queue, this.exchange, this.routingKey);
+      await channel.assertExchange(data.exchange, 'direct', { durable: true });
+      await channel.assertQueue(data.queue, { durable: true });
+      await channel.bindQueue(data.queue, data.exchange, data.routingKey);
  
-      const result = channel.publish(this.exchange, this.routingKey, Buffer.from(JSON.stringify(message)));
+      const result = channel.publish(data.exchange, data.routingKey, Buffer.from(JSON.stringify(data.message)));
       
       if(result){
-        console.log('Message sent to queue:', this.queue, message);
+        console.log('Message sent to queue:', data.queue, data.message);
       } else {
-        console.log('Message not sent to queue:',this.queue);
+        console.log('Message not sent to queue:',data.queue);
       }
  
       await channel.close();
@@ -35,28 +35,28 @@ export class RabbitMQFactory implements IMessageQueue {
     }
   }
 
-  async on(): Promise<void> {
+  async on(data: DataInput): Promise<void> {
     try {      
-      await this.consume(); 
+      await this.consume(data); 
     } catch (error) {
       console.error('Error starting the consumer:', error);
       process.exit(1); 
     }
   }
 
-  async consume(): Promise<void> {
+  async consume(data: DataInput): Promise<void> {
     try {
       const connection = await RabbitMQConnection();
       const channel = await connection.createChannel();
       
-      await channel.assertExchange(this.exchange, 'direct', { durable: true });
-      await channel.assertQueue(this.queue, { durable: true });
-      await channel.bindQueue(this.queue, this.exchange, this.routingKey);
+      await channel.assertExchange(data.exchange, 'direct', { durable: true });
+      await channel.assertQueue(data.queue, { durable: true });
+      await channel.bindQueue(data.queue, data.exchange, data.routingKey);
 
-      console.log(`Waiting for messages in queue: ${this.queue}`);
+      console.log(`Waiting for messages in queue: ${data.queue}`);
       
       channel.consume(
-        this.queue,
+        data.queue,
         async (msg) => {
           if (msg) {
             const messageContent = msg.content.toString();
@@ -101,4 +101,12 @@ export class RabbitMQFactory implements IMessageQueue {
     console.log(`Payment of ${JSON.stringify( message )} processed successfully.`);
   }
 
+}
+
+
+type DataInput = {
+  exchange:string
+  queue:string
+  routingKey:string
+  message: object
 }
