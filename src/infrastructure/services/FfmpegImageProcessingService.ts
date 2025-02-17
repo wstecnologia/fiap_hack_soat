@@ -6,31 +6,37 @@ import path from "path";
 export class FfmpegImageProcessingService implements ImageProcessingService {
   
   async extractFrames(fileBuffer: Buffer, outputFolder: string, interval: number): Promise<void> {
+    await fs.promises.mkdir(outputFolder, { recursive: true });
+
     const tempVideoPath = path.join(outputFolder, `temp_video_${Date.now()}.mp4`);
     await fs.promises.writeFile(tempVideoPath, fileBuffer);
+  try {
+      const duration = await this.getVideoDuration(tempVideoPath);
+      const tasks: Promise<void>[] = [];
 
-    const duration = await this.getVideoDuration(tempVideoPath);
-    const tasks: Promise<void>[] = [];
+      for (let currentTime = 0; currentTime < duration; currentTime += interval) {
+        const outputPath = path.join(outputFolder, `frame_at_${currentTime}.jpg`);
+        tasks.push(
+          new Promise<void>((resolve, reject) => {
+            ffmpeg(tempVideoPath)
+              .screenshots({
+                timestamps: [currentTime],
+                filename: path.basename(outputPath),
+                folder: outputFolder,
+                size: "1920x1080",
+              })
+              .on("end", resolve)
+              .on("error", reject);
+          })
+        );
+      }
 
-    for (let currentTime = 0; currentTime < duration; currentTime += interval) {
-      const outputPath = path.join(outputFolder, `frame_at_${currentTime}.jpg`);
-      tasks.push(
-        new Promise<void>((resolve, reject) => {
-          ffmpeg(tempVideoPath)
-            .screenshots({
-              timestamps: [currentTime],
-              filename: path.basename(outputPath),
-              folder: outputFolder,
-              size: "1920x1080",
-            })
-            .on("end", resolve)
-            .on("error", reject);
-        })
-      );
-    }
+      await Promise.all(tasks);      
+  } finally {    
+    await fs.promises.unlink(tempVideoPath).catch(() => {});     
+    await fs.promises.rm(outputFolder, { recursive: true, force: true }).catch(() => {}); 
+}
 
-    await Promise.all(tasks);
-    await fs.promises.unlink(tempVideoPath);
   }
 
   private getVideoDuration(filePath: string): Promise<number> {

@@ -5,11 +5,7 @@ import { FilesMongoRepositorie } from "../repository/FilesMongoRepositorie";
 
 export class RabbitMQFactory implements IMessageQueue {
 
-  constructor(
-    //private readonly exchange:string,
-    //private readonly queue:string,
-    //private readonly routingKey:string
-  ){}
+  constructor(){}
 
   async publish(data: DataInput): Promise<void> {
     try {

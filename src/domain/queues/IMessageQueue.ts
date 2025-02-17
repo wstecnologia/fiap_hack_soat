@@ -1,6 +1,12 @@
 export interface IMessageQueue {
-  publish( message: object):Promise<void>
+  publish( data: DataInput):Promise<void>
   //on():Promise<void>
   //consume(exchange:string, queue:string, routingKey:string):Promise<void>
 }
 
+type DataInput = {
+  exchange:string
+  queue:string
+  routingKey:string
+  message: object
+}

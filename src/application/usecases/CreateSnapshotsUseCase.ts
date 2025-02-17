@@ -3,7 +3,6 @@ import { DomainException } from '@/domain/exceptions/DomainException';
 import { IFileSystemService } from '@/domain/file-handling/IFileSystemService';
 import { IFileRepositorie } from '@/domain/repositories/IFileRepositorie';
 import { Status } from '@/domain/shared/Status';
-import fs from 'fs';
 import { FileCompressionService } from '../../domain/file-handling/FileCompressionService';
 import { ImageProcessingService } from '../../domain/file-handling/ImageProcessingService';
 import { IMessageQueue } from '../../domain/queues/IMessageQueue';
@@ -28,7 +27,7 @@ export class CreateSnapshotsUseCase {
 
     return this.imageProcessingService.extractFrames(data.buffer, this.outputFolder, 20)
     .then(() => this.compressionService.zipFolder(this.outputFolder, this.destinationZipFilePath))
-    .then(() => fs.promises.readFile(this.destinationZipFilePath))
+    .then(() => this.fileSystemService.readFile(this.destinationZipFilePath))
     .then((arquivoBuffer) => {
       //ImportS3.import(arquivoBuffer, "testeS3Fiap.zip")
       const file = File.create({
@@ -44,7 +43,7 @@ export class CreateSnapshotsUseCase {
         .then((dataRepositorieId) => ({ arquivoBuffer, dataRepositorieId }));
     })
     .then(({ arquivoBuffer, dataRepositorieId }) => {
-           
+       
       this.rabbitMQPublisher.publish({
         exchange:'import_files',
         queue:'fiap_file_progress',
@@ -67,6 +66,8 @@ export class CreateSnapshotsUseCase {
           message: "File processing please wait",          
         }
       })
+
+      return this.fileSystemService.deleteFile(this.destinationZipFilePath);
     })
     .then(() => console.log("Processo finalizado."))
     .catch((error) => {
