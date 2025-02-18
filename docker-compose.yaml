@@ -5,13 +5,7 @@ services:
     image: wstecnologia/hack_soat_video_processor
     container_name: hack_soat_video_processor
     restart: always
-    environment:
-      - COGNITO_REGION=${COGNITO_REGION}
-      - USER_POOL_ID=${USER_POOL_ID}
-      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
-      - POOL_ID=${POOL_ID}
-      - PASSWORD_MONGO=${PASSWORD_MONGO}
-      - DATABASE_URL=${DATABASE_URL}
-      - RABBIT_MQ_URL=${RABBIT_MQ_URL}
+    env_file:
+        - .env
     ports:
       - "3000:3000"
