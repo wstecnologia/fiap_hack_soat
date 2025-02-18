@@ -12,7 +12,13 @@ O principal objetivo é extrair quadros (frames) de um vídeo em intervalos regu
 - **Compactação de Quadros**: Compacta todos os quadros extraídos em um único arquivo ZIP para facilitar o manuseio e transferência.
 
 
+## Instalação.
+**Comandos para iniciar:**
 
+- Npm install
+- Npm run build
+- Npm start
+*OBS.: Para utilização e necessario renomear o arquivo .env_exemplo para .env E adicionar os valores de cada parametro.*
 
 ### Scripts utéis 
 Atualizar conteiner local com dados do dockerhub
