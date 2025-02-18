@@ -24,3 +24,6 @@ var videoPath = @"Caminho\Para\Seu\Vídeo.mp4";
 ### Scripts utéis 
 Atualizar conteiner
   docker-compose down && docker-compose pull && docker-compose up -d
+
+Buildar imagem local
+  docker build -t wstecnologia/hack_soat_video_processor .

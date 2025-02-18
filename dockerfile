@@ -1,17 +1,22 @@
 FROM node:18
 
+# Defina o diretório de trabalho
 WORKDIR /app
 
+# Copie os arquivos de configuração do pacote
 COPY package*.json ./
 
-RUN npm install --production
-
+# Copie o restante dos arquivos da aplicação
 COPY . .
 
-RUN npm install
+# Gere o Prisma Client
+RUN npx prisma generate
 
+# Construa a aplicação
 RUN npm run build
 
+# Exponha a porta que a aplicação irá usar
 EXPOSE 3000
 
-CMD ["npm","start"]
+# Comando para iniciar a aplicação
+CMD ["npm", "start"]
