@@ -6,7 +6,6 @@ import { ImageProcessingService } from '../../domain/file-handling/ImageProcessi
 import { IMessageQueue } from '../../domain/queues/IMessageQueue';
 import { IFileRepositorie } from '../../domain/repositories/IFileRepositorie';
 import { Status } from '../../domain/shared/Status';
-
 export class CreateSnapshotsUseCase {  
   private outputFolder:string 
   private destinationZipFilePath:string 
@@ -30,6 +29,7 @@ export class CreateSnapshotsUseCase {
     .then(() => this.fileSystemService.readFile(this.destinationZipFilePath))
     .then((arquivoBuffer) => {
       //ImportS3.import(arquivoBuffer, "testeS3Fiap.zip")
+      
       const file = File.create({
         url:"",
         user_id: data.user_id,
@@ -51,6 +51,7 @@ export class CreateSnapshotsUseCase {
         message: {
           file: arquivoBuffer,
           user_id: data.user_id,
+          email: data.email,
           status: Status.PROCESSAMENTO_ANDAMENTO,
           id_db: dataRepositorieId
         }
@@ -61,12 +62,13 @@ export class CreateSnapshotsUseCase {
         queue:'file_progress',
         routingKey:'file_progress',
         message: {
-          email: 'saviodesenv@gmail.com',
+          email: data.email,
           subject: "Processing file",
           message: "File processing please wait",          
         }
       })
-
+      
+      this.fileSystemService.deleteFile
       return this.fileSystemService.deleteFile(this.destinationZipFilePath);
     })
     .then(() => console.log("Processo finalizado."))
@@ -77,7 +79,7 @@ export class CreateSnapshotsUseCase {
         queue:'file_progress',
         routingKey:'file_progress',
         message: {
-          email: 'saviodesenv@gmail.com',
+          email: data.email,
           subject: "Processing file",
           message: "Process failed",          
         }
@@ -89,7 +91,8 @@ export class CreateSnapshotsUseCase {
 }
 
 type Input = {  
-  user_id:string  
+  user_id:string 
+  email:string 
   originalname:string
   mimetype:string
   size:number
