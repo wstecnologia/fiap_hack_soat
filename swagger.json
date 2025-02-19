@@ -4,9 +4,22 @@
     "title": "API de Upload de Arquivos",
     "version": "1.0.0"
   },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
   "paths": {
-
-    "/upload": {
+    "/import": {
       "post": {
         "summary": "Import fragments of media",
         "tags": ["Files"],
