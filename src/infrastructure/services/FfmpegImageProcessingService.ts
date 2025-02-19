@@ -33,8 +33,7 @@ export class FfmpegImageProcessingService implements ImageProcessingService {
 
       await Promise.all(tasks);      
   } finally {    
-    await fs.promises.unlink(tempVideoPath).catch(() => {});     
-    await fs.promises.rm(outputFolder, { recursive: true, force: true }).catch(() => {}); 
+    await fs.promises.unlink(tempVideoPath).catch(() => {});         
 }
 
   }

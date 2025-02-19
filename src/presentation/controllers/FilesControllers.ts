@@ -25,10 +25,11 @@ export class FilesControllers {
 
    import(req):Promise<void>{    
     const user_id = req.auth.sub
-
+   
     const input = {
       user_id,
       originalname:req.file.originalname,
+      email:req.auth.email,
       mimetype:req.file.mimetype,
       size:Number(req.file.size),
       buffer:req.file.buffer

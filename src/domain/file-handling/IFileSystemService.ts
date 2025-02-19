@@ -5,4 +5,5 @@ export interface IFileSystemService {
   outputFolder():string
   destinationZipFilePath():string
   deleteFile(filePath: string): Promise<void>
+  deleteFolder(path:string):Promise<void>
 }
