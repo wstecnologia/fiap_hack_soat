@@ -39,11 +39,14 @@ export class FilesControllers {
   }
 
   async getListStatusFilesUsers(req){
-    //query: { page: '1', limit: '10' }
+    const user_id = req.auth.sub
+
     const filter = {
+      userId:user_id,
       page: Number(req.query.page) || 1,
       limit:Number(req.query.limit) || 10
     }
+    
     return this.listStatusFilesUsersUseCase.execute(filter)
 
   }

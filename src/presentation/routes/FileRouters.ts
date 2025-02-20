@@ -25,7 +25,7 @@ router.post('/import', authMiddleware, upload.single('file'), (req:Request, res:
   
 });
 
-router.get('/list', upload.single('file'), async(req:Request, res:Response)=>{
+router.get('/list', authMiddleware, upload.single('file'), async(req:Request, res:Response)=>{
   try {
   
     const retorno = await controller.getListStatusFilesUsers(req)

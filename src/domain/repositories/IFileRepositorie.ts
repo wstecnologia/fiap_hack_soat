@@ -10,6 +10,7 @@ export interface IFileRepositorie {
 }
 
 type Input = {
+  userId:string
   page:number
   limit:number
 }
