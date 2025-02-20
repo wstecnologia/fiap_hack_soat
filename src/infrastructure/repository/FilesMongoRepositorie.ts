@@ -63,8 +63,15 @@ async insert(file: File): Promise<string> {
 
 async getFilesUses(filter:Input): Promise<PaginatedResponseDTO<FileResponseDTO>> {
   try {
-    const totalItems = await this._prisma.files.count()
-    const lstFiles =  await this._prisma.files.findMany({    
+    const totalItems = await this._prisma.files.count({
+      where: {
+        user_id: filter.userId 
+      },
+    })
+    const lstFiles =  await this._prisma.files.findMany({ 
+      where: {
+        user_id: filter.userId 
+      },   
       take:Number(filter.limit),
       skip:(Number(filter.page) - 1) * Number(filter.limit)
     })
@@ -114,6 +121,7 @@ async getFile(id:string): Promise<File> {
 }
 
 type Input = {
+  userId:string
   page:number
   limit:number
 }

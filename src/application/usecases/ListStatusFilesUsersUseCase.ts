@@ -17,6 +17,7 @@ export class ListStatusFilesUsersUseCase {
 }
 
 type Input = {
+  userId:string
   page:number
   limit:number
 }
